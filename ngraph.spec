@@ -4,7 +4,7 @@
 #
 Name     : ngraph
 Version  : 0.22.0
-Release  : 1
+Release  : 2
 URL      : https://github.com/NervanaSystems/ngraph/archive/v0.22.0.tar.gz
 Source0  : https://github.com/NervanaSystems/ngraph/archive/v0.22.0.tar.gz
 Summary  : No detailed summary available
