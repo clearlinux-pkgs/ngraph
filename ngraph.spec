@@ -4,7 +4,7 @@
 #
 Name     : ngraph
 Version  : 0.22.0
-Release  : 4
+Release  : 5
 URL      : https://github.com/NervanaSystems/ngraph/archive/v0.22.0.tar.gz
 Source0  : https://github.com/NervanaSystems/ngraph/archive/v0.22.0.tar.gz
 Summary  : No detailed summary available
@@ -14,7 +14,6 @@ Requires: ngraph-lib = %{version}-%{release}
 Requires: ngraph-license = %{version}-%{release}
 Requires: numpy
 Requires: six
-Requires: typing
 BuildRequires : buildreq-cmake
 BuildRequires : buildreq-distutils3
 BuildRequires : cmake
@@ -24,7 +23,6 @@ BuildRequires : numpy
 BuildRequires : openmpi-dev
 BuildRequires : protobuf-dev
 BuildRequires : six
-BuildRequires : typing
 BuildRequires : zlib-dev
 Patch1: 0001-ngraph-compile-for-DLDT-R2.patch
 
@@ -62,6 +60,7 @@ license components for the ngraph package.
 
 %prep
 %setup -q -n ngraph-0.22.0
+cd %{_builddir}/ngraph-0.22.0
 %patch1 -p1
 
 %build
@@ -69,7 +68,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1568745030
+export SOURCE_DATE_EPOCH=1588361715
 pushd src
 mkdir -p clr-build
 pushd clr-build
@@ -78,13 +77,13 @@ export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %cmake .. -DNGRAPH_LIB_VERSIONING_ENABLE=TRUE \
 -DNGRAPH_STATIC_LIB_ENABLE=FALSE \
 -DNGRAPH_API_VERSION=0.22
-make  %{?_smp_mflags} VERBOSE=1
+make  %{?_smp_mflags}  VERBOSE=1
 popd
 mkdir -p clr-build-avx2
 pushd clr-build-avx2
@@ -93,15 +92,17 @@ export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 -march=haswell "
 export CFLAGS="$CFLAGS -march=haswell -m64"
 export CXXFLAGS="$CXXFLAGS -march=haswell -m64"
+export FFLAGS="$FFLAGS -march=haswell -m64"
+export FCFLAGS="$FCFLAGS -march=haswell -m64"
 %cmake .. -DNGRAPH_LIB_VERSIONING_ENABLE=TRUE \
 -DNGRAPH_STATIC_LIB_ENABLE=FALSE \
 -DNGRAPH_API_VERSION=0.22
-make  %{?_smp_mflags} VERBOSE=1
+make  %{?_smp_mflags}  VERBOSE=1
 popd
 mkdir -p clr-build-avx512
 pushd clr-build-avx512
@@ -110,40 +111,42 @@ export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 -march=skylake-avx512 "
 export CFLAGS="$CFLAGS -march=skylake-avx512 -m64 "
 export CXXFLAGS="$CXXFLAGS -march=skylake-avx512 -m64 "
+export FFLAGS="$FFLAGS -march=skylake-avx512 -m64 "
+export FCFLAGS="$FCFLAGS -march=skylake-avx512 -m64 "
 %cmake .. -DNGRAPH_LIB_VERSIONING_ENABLE=TRUE \
 -DNGRAPH_STATIC_LIB_ENABLE=FALSE \
 -DNGRAPH_API_VERSION=0.22
-make  %{?_smp_mflags} VERBOSE=1
+make  %{?_smp_mflags}  VERBOSE=1
 popd
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1568745030
+export SOURCE_DATE_EPOCH=1588361715
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/ngraph
-cp LICENSE %{buildroot}/usr/share/package-licenses/ngraph/LICENSE
-cp licenses/Apache-2.0-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_Apache-2.0-license.txt
-cp licenses/OFL-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_OFL-license.txt
-cp licenses/caffe2-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_caffe2-license.txt
-cp licenses/eigen-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_eigen-license.txt
-cp licenses/googletest-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_googletest-license.txt
-cp licenses/jquery-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_jquery-license.txt
-cp licenses/json-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_json-license.txt
-cp licenses/llvm-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_llvm-license.txt
-cp licenses/mkl-dnn-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_mkl-dnn-license.txt
-cp licenses/mklml-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_mklml-license.txt
-cp licenses/numpy-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_numpy-license.txt
-cp licenses/pybind11-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_pybind11-license.txt
-cp licenses/sphinx-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_sphinx-license.txt
-cp licenses/sphinx_rtd_theme-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_sphinx_rtd_theme-license.txt
-cp licenses/swagger-ui-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_swagger-ui-license.txt
-cp licenses/tbb-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_tbb-license.txt
-cp licenses/tensorflow-license.txt %{buildroot}/usr/share/package-licenses/ngraph/licenses_tensorflow-license.txt
+cp %{_builddir}/ngraph-0.22.0/LICENSE %{buildroot}/usr/share/package-licenses/ngraph/7df059597099bb7dcf25d2a9aedfaf4465f72d8d
+cp %{_builddir}/ngraph-0.22.0/licenses/Apache-2.0-license.txt %{buildroot}/usr/share/package-licenses/ngraph/3fa2daf91c6f9dcf7c767a7b755fa36a23debc4f
+cp %{_builddir}/ngraph-0.22.0/licenses/OFL-license.txt %{buildroot}/usr/share/package-licenses/ngraph/293bda57df5fd753d536918973e0cbdc7ad2a3f5
+cp %{_builddir}/ngraph-0.22.0/licenses/caffe2-license.txt %{buildroot}/usr/share/package-licenses/ngraph/48a395f1045c617d1b407e8372bd77c8f71bf86c
+cp %{_builddir}/ngraph-0.22.0/licenses/eigen-license.txt %{buildroot}/usr/share/package-licenses/ngraph/60e7040879300ea5e3cb2f6e4437b001ef85811b
+cp %{_builddir}/ngraph-0.22.0/licenses/googletest-license.txt %{buildroot}/usr/share/package-licenses/ngraph/37571ac0358829b2175835de61c68818dd709239
+cp %{_builddir}/ngraph-0.22.0/licenses/jquery-license.txt %{buildroot}/usr/share/package-licenses/ngraph/594e887872eacc74920a5eb310c1f9ee34dcf131
+cp %{_builddir}/ngraph-0.22.0/licenses/json-license.txt %{buildroot}/usr/share/package-licenses/ngraph/f37bc6749b691bf29592797db379cf0e390bb8b7
+cp %{_builddir}/ngraph-0.22.0/licenses/llvm-license.txt %{buildroot}/usr/share/package-licenses/ngraph/840cef56b46b261f9d3faba6e79f4da93126f63a
+cp %{_builddir}/ngraph-0.22.0/licenses/mkl-dnn-license.txt %{buildroot}/usr/share/package-licenses/ngraph/385bdbc74ad1af072775c2366445b9a20b96f1d0
+cp %{_builddir}/ngraph-0.22.0/licenses/mklml-license.txt %{buildroot}/usr/share/package-licenses/ngraph/8d9c29c48565d4d4283216c4c63e4fe31cc56257
+cp %{_builddir}/ngraph-0.22.0/licenses/numpy-license.txt %{buildroot}/usr/share/package-licenses/ngraph/051b823186e06740361b3bd1ec3e1ba37b836f36
+cp %{_builddir}/ngraph-0.22.0/licenses/pybind11-license.txt %{buildroot}/usr/share/package-licenses/ngraph/9e66a6e615665d81e0518564c4f93927a41a5d8c
+cp %{_builddir}/ngraph-0.22.0/licenses/sphinx-license.txt %{buildroot}/usr/share/package-licenses/ngraph/62e83dae35534c2dd6abbefe96698b182a900c15
+cp %{_builddir}/ngraph-0.22.0/licenses/sphinx_rtd_theme-license.txt %{buildroot}/usr/share/package-licenses/ngraph/ff83fbccde4452fe6eded294096f1f164c3519dd
+cp %{_builddir}/ngraph-0.22.0/licenses/swagger-ui-license.txt %{buildroot}/usr/share/package-licenses/ngraph/b63a31e4a6af5b8d9432771d7e737b8cbd40315b
+cp %{_builddir}/ngraph-0.22.0/licenses/tbb-license.txt %{buildroot}/usr/share/package-licenses/ngraph/7a511ea6464485d919713d82ca7a175e3be9b407
+cp %{_builddir}/ngraph-0.22.0/licenses/tensorflow-license.txt %{buildroot}/usr/share/package-licenses/ngraph/02d5a8aa5c17fd84b6d53f0ce2820f7df439873c
 pushd src
 pushd clr-build-avx512
 %make_install_avx512  || :
@@ -835,21 +838,21 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/ngraph/LICENSE
-/usr/share/package-licenses/ngraph/licenses_Apache-2.0-license.txt
-/usr/share/package-licenses/ngraph/licenses_OFL-license.txt
-/usr/share/package-licenses/ngraph/licenses_caffe2-license.txt
-/usr/share/package-licenses/ngraph/licenses_eigen-license.txt
-/usr/share/package-licenses/ngraph/licenses_googletest-license.txt
-/usr/share/package-licenses/ngraph/licenses_jquery-license.txt
-/usr/share/package-licenses/ngraph/licenses_json-license.txt
-/usr/share/package-licenses/ngraph/licenses_llvm-license.txt
-/usr/share/package-licenses/ngraph/licenses_mkl-dnn-license.txt
-/usr/share/package-licenses/ngraph/licenses_mklml-license.txt
-/usr/share/package-licenses/ngraph/licenses_numpy-license.txt
-/usr/share/package-licenses/ngraph/licenses_pybind11-license.txt
-/usr/share/package-licenses/ngraph/licenses_sphinx-license.txt
-/usr/share/package-licenses/ngraph/licenses_sphinx_rtd_theme-license.txt
-/usr/share/package-licenses/ngraph/licenses_swagger-ui-license.txt
-/usr/share/package-licenses/ngraph/licenses_tbb-license.txt
-/usr/share/package-licenses/ngraph/licenses_tensorflow-license.txt
+/usr/share/package-licenses/ngraph/02d5a8aa5c17fd84b6d53f0ce2820f7df439873c
+/usr/share/package-licenses/ngraph/051b823186e06740361b3bd1ec3e1ba37b836f36
+/usr/share/package-licenses/ngraph/293bda57df5fd753d536918973e0cbdc7ad2a3f5
+/usr/share/package-licenses/ngraph/37571ac0358829b2175835de61c68818dd709239
+/usr/share/package-licenses/ngraph/385bdbc74ad1af072775c2366445b9a20b96f1d0
+/usr/share/package-licenses/ngraph/3fa2daf91c6f9dcf7c767a7b755fa36a23debc4f
+/usr/share/package-licenses/ngraph/48a395f1045c617d1b407e8372bd77c8f71bf86c
+/usr/share/package-licenses/ngraph/594e887872eacc74920a5eb310c1f9ee34dcf131
+/usr/share/package-licenses/ngraph/60e7040879300ea5e3cb2f6e4437b001ef85811b
+/usr/share/package-licenses/ngraph/62e83dae35534c2dd6abbefe96698b182a900c15
+/usr/share/package-licenses/ngraph/7a511ea6464485d919713d82ca7a175e3be9b407
+/usr/share/package-licenses/ngraph/7df059597099bb7dcf25d2a9aedfaf4465f72d8d
+/usr/share/package-licenses/ngraph/840cef56b46b261f9d3faba6e79f4da93126f63a
+/usr/share/package-licenses/ngraph/8d9c29c48565d4d4283216c4c63e4fe31cc56257
+/usr/share/package-licenses/ngraph/9e66a6e615665d81e0518564c4f93927a41a5d8c
+/usr/share/package-licenses/ngraph/b63a31e4a6af5b8d9432771d7e737b8cbd40315b
+/usr/share/package-licenses/ngraph/f37bc6749b691bf29592797db379cf0e390bb8b7
+/usr/share/package-licenses/ngraph/ff83fbccde4452fe6eded294096f1f164c3519dd
